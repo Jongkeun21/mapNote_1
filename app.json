@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "mapNote_1",
+    "slug": "mapNote_1",
+    "privacy": "public",
+    "sdkVersion": "33.0.0",
+    "platforms": ["ios", "android", "web"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "ios": {
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "APIKEY",
+        "googleSignIn": {
+          "reservedClientId": "CLIENT_ID"
+        }
+      }
+    },
+    "android": {
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "READ_EXTERNAL_STORAGE"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCBVsA-bEaTqSHSyVphxNJvje9f9DBsEhw"
+        },
+        "googleSignIn": {
+          "apiKey": "SIGNIN_APIKEY"
+        }
+      }
+    },
+    "assetBundlePatterns": ["**/*"]
+  }
+}
