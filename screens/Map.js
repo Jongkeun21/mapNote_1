@@ -97,6 +97,13 @@ export default ({ navigation }) => {
       console.log(error);
     }
   };
+  const goToNewSearch = async () => {
+    try {
+      await navigation.navigate("Search");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <View>
@@ -147,7 +154,7 @@ export default ({ navigation }) => {
             color={styles.darkGreyColor}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={pressed}>
+        <TouchableOpacity onPress={goToNewSearch}>
           <EvilIcons name={"gear"} size={40} color={styles.darkGreyColor} />
         </TouchableOpacity>
       </TabBarStyle>

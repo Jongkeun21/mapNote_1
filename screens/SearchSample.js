@@ -14,7 +14,8 @@ export default (GooglePlacesInput = ({ navigation }) => {
   const API_KEY = "AIzaSyCBVsA-bEaTqSHSyVphxNJvje9f9DBsEhw";
   const _lat = navigation.getParam("currentLat");
   const _lon = navigation.getParam("currentLon");
-  console.log(_lat, _lon);
+  const location = _lat + "," + _lon;
+  // console.log(location);
 
   const Text = styled.Text``;
 
@@ -36,7 +37,7 @@ export default (GooglePlacesInput = ({ navigation }) => {
         autoFocus={false}
         returnKeyType={"search"} // Can be left out for default return key https://facebook.github.io/react-native/docs/TextInput.html#returnkeytype
         keyboardAppearance={"light"} // Can be left out for default keyboardAppearance https://facebook.github.io/react-native/docs/TextInput.html#keyboardappearance
-        // listViewDisplayed="true" // true/false/undefined
+        listViewDisplayed={false} // true/false/undefined
         fetchDetails={true}
         renderDescription={row =>
           row.description || row.formatted_address || row.name} // custom description render
@@ -68,28 +69,27 @@ export default (GooglePlacesInput = ({ navigation }) => {
           types: "establishment", // default: 'geocode'
           components: "country:kr",
           region: "kr",
-          // location: "36.624395405091775, 127.45798919762582",
-          // radius: "5000",
-          // strictbounds: true
+          location: location,
+          radius: "5000",
+          strictbounds: true
         }}
-        GoogleReverseGeocodingQuery={{
-          // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
-        }}
+        // GoogleReverseGeocodingQuery={{
+        //   // available options for GoogleReverseGeocoding API : https://developers.google.com/maps/documentation/geocoding/intro
+        // }}
         GooglePlacesSearchQuery={{
           // available options for GooglePlacesSearch API : https://developers.google.com/places/web-service/search
-          rankby: "distance",
           key: API_KEY,
-          location: "36.624395405091775, 127.45798919762582",
-          type: "cafe"
+          language: "ko",
+          region: "kr"
         }}
         GooglePlacesDetailsQuery={{
           // available options for GooglePlacesDetails API : https://developers.google.com/places/web-service/details
           fields: "formatted_address"
         }}
-        filterReverseGeocodingByTypes={[
-          "locality",
-          "administrative_area_level_3"
-        ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
+        // filterReverseGeocodingByTypes={[
+        //   "locality",
+        //   "administrative_area_level_3"
+        // ]} // filter the reverse geocoding results by types - ['locality', 'administrative_area_level_3'] if you want to display only cities
         // predefinedPlaces={[homePlace]}
         debounce={200} // debounce the requests in ms. Set to 0 to remove debounce. By default 0ms.
         //   renderLeftButton={() =>

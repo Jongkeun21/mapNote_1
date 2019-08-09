@@ -5,6 +5,7 @@ import Search from "../screens/Search";
 import SearchSample from "../screens/SearchSample";
 import SearchSample2 from "../screens/SearchSample2";
 import styles from "../styles";
+import NewSearch from "../screens/NewSearch";
 
 const MainNavigation = createStackNavigator({
   Main: {
@@ -39,6 +40,14 @@ const MainNavigation = createStackNavigator({
     screen: SearchSample2,
     SearchSample2: {
       title: "SearchSample2",
+      headerBackTitle: null,
+      headerTintColor: styles.darkGreyColor
+    }
+  },
+  NewSearch: {
+    screen: NewSearch,
+    NewSearch: {
+      title: "NewSearch",
       headerBackTitle: null,
       headerTintColor: styles.darkGreyColor
     }
