@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   Alert,
   Keyboard,
-  Image,
   TouchableWithoutFeedback,
   ScrollView,
   FlatList
@@ -12,7 +11,6 @@ import {
 import { ListItem } from "react-native-elements";
 import styles from "../styles";
 import constants from "../constants";
-import Loader from "../Loader";
 
 const Header = styled.View`
   align-items: center;
@@ -57,7 +55,7 @@ const Text = styled.Text`
 export default ({ navigation }) => {
   const arr = [];
   const [textValue, setTextValue] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const API_KEY = "AIzaSyCBVsA-bEaTqSHSyVphxNJvje9f9DBsEhw";
   const onSubmitEditing = async () => {
     try {
@@ -70,11 +68,9 @@ export default ({ navigation }) => {
     } catch (error) {
       console.log(error);
       Alert.alert("Wrong location. Try again");
-    } finally {
-      setIsLoaded(true);
-    }
+    } 
   };
-  const _getList = async (count, info) => {
+  const _getList = (count, info) => {
     try {
       for (let i = 0; i < count; i++) {
         arr.push({
@@ -89,19 +85,15 @@ export default ({ navigation }) => {
       console.log(error);
     }
   };
-  const pressed = () => {
-    // Alert.alert("Pressed");
-    console.log("this is pressed");
-  };
-  const _getInfo = text => {
-    fetch(
+  const _getInfo = async text => {
+    await fetch(
       `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${text}&region=kr&language=ko&key=${API_KEY}`
     )
       .then(response => response.json())
       .then(json => {
         console.log(json.results.length);
         _getList(json.results.length, json.results);
-        console.log(arr[0]);
+        setLoading(true);
       });
   };
 
@@ -126,9 +118,9 @@ export default ({ navigation }) => {
         <ListContainer>
           <ScrollView>
             <FlatList
-              data={isLoaded ? <Loader /> : arr}
+              data={loading ? [{ key: "isLoaded" }] : [{ key: "Loading" }]}
               renderItem={({ item }) => {
-                return <ListItem title={item.name} />;
+                return <ListItem style={{ flex: 1 }} title={item.key} />;
               }}
             />
           </ScrollView>
