@@ -53,12 +53,13 @@ const Text = styled.Text`
 `;
 
 export default ({ navigation }) => {
-  const arr = [];
+  const [listValue, setListValue] = useState([]);
   const [textValue, setTextValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const API_KEY = "AIzaSyCBVsA-bEaTqSHSyVphxNJvje9f9DBsEhw";
   const onSubmitEditing = async () => {
     try {
+      setListValue(null);
       if (textValue.textValue !== null) {
         console.log(textValue.textValue);
         _getInfo(textValue.textValue);
@@ -70,32 +71,37 @@ export default ({ navigation }) => {
       Alert.alert("Wrong location. Try again");
     } 
   };
-  const _getList = (count, info) => {
-    try {
-      for (let i = 0; i < count; i++) {
-        arr.push({
-          key: i,
-          name: info[i].name,
-          formatted_address: info[i].formatted_address,
-          location: info[i].geometry.location,
-          place_id: info[i].place_id
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const _getInfo = async text => {
     await fetch(
       `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${text}&region=kr&language=ko&key=${API_KEY}`
     )
       .then(response => response.json())
       .then(json => {
-        console.log(json.results.length);
         _getList(json.results.length, json.results);
-        setLoading(true);
       });
   };
+  const _getList = (count, info) => {
+    const arr = [];
+    try {
+      for (let i = 0; i < count; i++) {
+        arr.push({
+          key: info[i].place_id,
+          name: info[i].name,
+          formatted_address: info[i].formatted_address,
+          location: info[i].geometry.location,
+          place_id: info[i].place_id
+        });
+      }
+      setListValue(arr);
+      setLoading(true);
+    } catch (error) {
+      console.log(error);
+    }
+    console.log("2", arr.length);
+  };
+  const _getCount = () => {
+    console.log(listValue.length);
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -118,10 +124,10 @@ export default ({ navigation }) => {
         <ListContainer>
           <ScrollView>
             <FlatList
-              data={loading ? [{ key: "isLoaded" }] : [{ key: "Loading" }]}
-              renderItem={({ item }) => {
-                return <ListItem style={{ flex: 1 }} title={item.key} />;
-              }}
+              data={loading ? listValue : [{ key: "Loading", name: "Loading" }]}
+              renderItem={({ item }) => 
+                <Text>{item.name}</Text>
+              }
             />
           </ScrollView>
         </ListContainer>
