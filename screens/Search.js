@@ -8,7 +8,6 @@ import {
   ScrollView,
   FlatList
 } from "react-native";
-import { ListItem } from "react-native-elements";
 import styles from "../styles";
 import constants from "../constants";
 
@@ -18,13 +17,9 @@ const Header = styled.View`
   flex-direction: row;
   margin: 5px 0px;
 `;
-const ListContainer = styled.View`
-  width: ${constants.width - 20};
-  background-color: ${styles.lightGreyColor};
-`;
 const TextInput = styled.TextInput`
-  width: ${constants.width - 90};
-  height: ${constants.height / 22};
+  width: ${constants.width - 25};
+  height: ${constants.height / 23};
   padding: 7px 5px;
   background-color: ${styles.greyColor};
   border: 1px solid ${styles.darkGreyColor};
@@ -35,31 +30,35 @@ const View = styled.View`
   flex: 1;
   align-items: center;
 `;
-const TextButtonContainer = styled.View`
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-  margin-left: 8px;
-`;
-const TextButton = styled.Text`
-  font-weight: 600;
-  font-size: 15px;
-  color: ${styles.blueColor};
-`;
-const Text = styled.Text`
+const ListContainer = styled.View`width: ${constants.width - 20};`;
+const ListName = styled.Text`
   font-weight: 500;
   font-size: 15px;
-  color: ${styles.darkGreyColor};
+  padding: 5px 3px;
+  color: ${styles.darkBlueColor};
 `;
+const ListAddress = styled.Text`
+  font-weight: 200;
+  font-size: 12px;
+  color: ${styles.blueColor};
+`;
+const Line = styled.View`
+  height: 1px;
+  width: ${constants.width - 20};
+  background-color: ${styles.lightGreyColor};
+  margin: 1px 0px;
+`;
+const Div = styled.View``;
 
 export default ({ navigation }) => {
   const [listValue, setListValue] = useState([]);
   const [textValue, setTextValue] = useState(null);
   const [loading, setLoading] = useState(false);
-  const API_KEY = "AIzaSyCBVsA-bEaTqSHSyVphxNJvje9f9DBsEhw";
+  const API_KEY = constants.API_KEY;
   const onSubmitEditing = async () => {
     try {
       setListValue(null);
+      setTextValue("");
       if (textValue.textValue !== null) {
         console.log(textValue.textValue);
         _getInfo(textValue.textValue);
@@ -69,7 +68,7 @@ export default ({ navigation }) => {
     } catch (error) {
       console.log(error);
       Alert.alert("Wrong location. Try again");
-    } 
+    }
   };
   const _getInfo = async text => {
     await fetch(
@@ -99,38 +98,48 @@ export default ({ navigation }) => {
     }
     console.log("2", arr.length);
   };
-  const _getCount = () => {
-    console.log(listValue.length);
-  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View>
         <Header>
           <TextInput
-            placeholder={"Search the location which you want"}
+            placeholder={"지역을 같이 검색하면 정확도가 올라갑니다."}
             onSubmitEditing={onSubmitEditing}
             returnKeyType={"search"}
-            onChangeText={textValue => setTextValue({ textValue })}
+            onChangeText={textValue => {
+              setTextValue({ textValue }), setLoading(false);
+            }}
             clearButtonMode={"always"}
             clearTextOnFocus={true}
           />
-          <TextButtonContainer>
-            <TouchableOpacity onPress={onSubmitEditing}>
-              <TextButton>Search</TextButton>
-            </TouchableOpacity>
-          </TextButtonContainer>
         </Header>
-        <ListContainer>
-          <ScrollView>
+        <ScrollView style={{ marginBottom: 10 }}>
+          <ListContainer>
             <FlatList
-              data={loading ? listValue : [{ key: "Loading", name: "Loading" }]}
-              renderItem={({ item }) => 
-                <Text>{item.name}</Text>
-              }
+              data={loading ? listValue : null}
+              renderItem={({ item }) =>
+                <Div>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate("Detail", {
+                        place_id: item.place_id
+                      });
+                    }}
+                  >
+                    <ListName>
+                      {item.name}
+                      <ListAddress>
+                        {"\n"}
+                        {item.formatted_address}
+                      </ListAddress>
+                    </ListName>
+                  </TouchableOpacity>
+                  <Line />
+                </Div>}
             />
-          </ScrollView>
-        </ListContainer>
+          </ListContainer>
+        </ScrollView>
       </View>
     </TouchableWithoutFeedback>
   );

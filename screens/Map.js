@@ -1,55 +1,84 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import MapView, { Marker } from "react-native-maps";
-import { TouchableOpacity, Alert, Keyboard, Image } from "react-native";
-import {
-  MaterialCommunityIcons,
-  MaterialIcons,
-  EvilIcons
-} from "@expo/vector-icons";
+import MapView from "react-native-maps";
+import { TouchableOpacity, Keyboard, FlatList, ScrollView } from "react-native";
+import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
 import styles from "../styles";
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import constants from "../constants";
 
 const View = styled.View`flex: 1;`;
-const Text = styled.Text`
-  margin-top: 50px;
-  margin-left: 7px;
-  margin-bottom: 10px;
-  font-weight: 600;
-  font-size: 15px;
-  color: ${styles.blueColor};
-`;
-const TabBarStyle = styled.View`
+const Header = styled.View`
   align-items: center;
   justify-content: center;
-  flex-direction: row;
-  margin: 20px 0px;
-  padding-bottom: 20px;
+  margin-top: 50px;
+`;
+const TextInput = styled.TextInput`
+  width: ${constants.width - 25};
+  height: ${constants.height / 23};
+  padding: 7px 5px;
+  background-color: ${styles.greyColor};
+  border: 1px solid ${styles.darkGreyColor};
+  border-radius: 4px;
+  font-size: 15px;
+  margin-bottom: 3px;
+  opacity: 0.8;
+`;
+const ListContainer = styled.View`
+  width: ${constants.width - 20};
+  height: ${constants.height / 5};
+  background-color: ${styles.greyColor};
+  opacity: 0.8;
+  border: 1px solid ${styles.darkGreyColor};
+  border-radius: 2px;
+`;
+const Div = styled.View``;
+const ListName = styled.Text`
+  font-weight: 500;
+  font-size: 15px;
+  padding: 5px 3px;
+  color: ${styles.darkBlueColor};
 `;
 
 export default ({ navigation }) => {
-  const zoomLevel = 0.008;
+  const currentZoom = 0.008;
+  const initialZoom = 4;
   const currentLat = navigation.getParam("_lat");
   const currentLon = navigation.getParam("_lon");
-  const markerStyle = {
-    width: 50,
-    height: 50
+  const initialRegion = {
+    latitude: 36.588965,
+    longitude: 127.8770248,
+    latitudeDelta: initialZoom,
+    longitudeDelta: initialZoom
+  };
+  const currentRegion = {
+    latitude: currentLat,
+    longitude: currentLon,
+    latitudeDelta: currentZoom,
+    longitudeDelta: currentZoom
   };
   const [isClicked, setIsClicked] = useState(false);
-  const [isCurrent, setIsCurrent] = useState(false);
-  const [isSearched, setIsSearched] = useState(false);
-  const [searchLocation, setSearchLocation] = useState({
-    latitude: currentLat,
-    longitude: currentLon,
-    latitudeDelta: 0.008,
-    longitudeDelta: 0.008
-  });
-  const region = {
-    latitude: currentLat,
-    longitude: currentLon,
-    latitudeDelta: zoomLevel,
-    longitudeDelta: zoomLevel
-  };
+  const [region, setRegion] = useState(initialRegion);
+  const markers = [
+    {
+      key: "11111",
+      title: "hello",
+      coordinate: {
+        latitude: currentLat,
+        longitude: currentLon
+      },
+      pinColor: "blue"
+    },
+    {
+      key: "2222",
+      title: "hi",
+      coordinate: {
+        latitude: currentLat + 0.3,
+        longitude: currentLon + 0.7
+      },
+      pinColor: "red"
+    }
+  ];
   const pressed = () => {
     // Alert.alert("Pressed");
     console.log("this is pressed");
@@ -65,39 +94,21 @@ export default ({ navigation }) => {
   };
   const goToCurrent = () => {
     try {
-      console.log("this is pressed");
-      setIsCurrent(true);
-      if (isCurrent) {
-        setSearchLocation(region);
-      }
-      setTimeout(() => {
-        setIsCurrent(false), setIsSearched(false);
-      }, 100);
+      console.log("Your current location is ", currentLat, ",", currentLon);
+      setRegion(currentRegion);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const backToInitial = () => {
+    try {
+      console.log("Back to initial zoom level");
+      setRegion(initialRegion);
     } catch (error) {
       console.log(error);
     }
   };
   const goToSearch = async () => {
-    try {
-      await navigation.navigate("SearchSample", {
-        currentLat: currentLat,
-        currentLon: currentLon
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const goToSearch2 = async () => {
-    try {
-      await navigation.navigate("SearchSample2", {
-        currentLat: currentLat,
-        currentLon: currentLon
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const goToNewSearch = async () => {
     try {
       await navigation.navigate("Search");
     } catch (error) {
@@ -109,14 +120,40 @@ export default ({ navigation }) => {
     <View>
       <MapView
         style={{ flex: 1 }}
-        region={isCurrent ? region : isSearched ? searchLocation : region}
+        region={region}
         mapType={"standard"}
         showsMyLocationButton={true}
+        showsUserLocation={true}
         showsCompass={false}
         pitchEnabled={false}
         onMarkerPress={pressMarker}
+        onPress={Keyboard.dismiss}
       >
-        <Marker
+        {markers.map(marker =>
+          <MapView.Marker
+            key={marker.key}
+            coordinate={marker.coordinate}
+            title={marker.title}
+            pinColor={marker.pinColor}
+          />
+        )}
+        <Header>
+          <TextInput placeholder={"지역을 같이 검색하면 정확도가 올라갑니다."} />
+          <ListContainer>
+            <ScrollView>
+              <FlatList
+                data={[{ key: "item" }]}
+                renderItem={({ item }) =>
+                  <Div>
+                    <ListName>
+                      {item.key}
+                    </ListName>
+                  </Div>}
+              />
+            </ScrollView>
+          </ListContainer>
+        </Header>
+        {/* <Marker
           coordinate={isCurrent ? region : isSearched ? searchLocation : region}
           pinColor={styles.blueColor}
         >
@@ -127,18 +164,46 @@ export default ({ navigation }) => {
             resizeMode="contain"
             style={markerStyle}
           />
-        </Marker>
-      </MapView>
-      <TabBarStyle>
-        <TouchableOpacity onPress={goToCurrent}>
+        </Marker> */}
+        <TouchableOpacity
+          style={{
+            width: 30,
+            height: 30,
+            marginLeft: 50,
+            marginTop: 60,
+            backgroundColor: "white",
+            borderStyle: "1px solid black",
+            borderRadius: 4
+          }}
+          onPress={goToCurrent}
+        >
           <MaterialIcons
-            style={{ marginRight: 20 }}
             name={"my-location"}
-            size={40}
+            size={30}
+            color={styles.redColor}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: 30,
+            height: 30,
+            marginLeft: 50,
+            marginTop: 10,
+            backgroundColor: "white",
+            borderStyle: "1px solid black",
+            borderRadius: 4
+          }}
+          onPress={backToInitial}
+        >
+          <MaterialIcons
+            name={"my-location"}
+            size={30}
             color={styles.blueColor}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToSearch}>
+      </MapView>
+      {/* <TabBarStyle>
+        <TouchableOpacity onPress={() => null}>
           <EvilIcons
             style={{ marginRight: 20 }}
             name={"gear"}
@@ -146,7 +211,7 @@ export default ({ navigation }) => {
             color={styles.darkGreyColor}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToSearch2}>
+        <TouchableOpacity onPress={() => null}>
           <EvilIcons
             style={{ marginRight: 20 }}
             name={"gear"}
@@ -154,10 +219,14 @@ export default ({ navigation }) => {
             color={styles.darkGreyColor}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={goToNewSearch}>
+        <TouchableOpacity
+          onPress={goToSearch}
+          style={{ alignContent: "center", justifyContent: "center" }}
+        >
           <EvilIcons name={"gear"} size={40} color={styles.darkGreyColor} />
+          <Text>Search</Text>
         </TouchableOpacity>
-      </TabBarStyle>
+      </TabBarStyle> */}
     </View>
   );
 };
