@@ -1,9 +1,8 @@
-import { createAppContainer, createStackNavigator } from "react-navigation";
-import MapScreen from "../screens/Map";
-import Main from "../screens/Main";
-import Search from "../screens/Search";
-import styles from "../styles";
-import Detail from "../screens/Detail";
+import { createAppContainer, createStackNavigator } from 'react-navigation'
+import MapScreen from '../screens/Map'
+import Main from '../screens/Main'
+import Add from '../screens/Add'
+import styles from '../styles'
 
 const MainNavigation = createStackNavigator({
   Main: {
@@ -17,7 +16,15 @@ const MainNavigation = createStackNavigator({
     navigationOptions: {
       header: null
     }
+  },
+  Add: {
+    screen: Add,
+    navigationOptions: {
+      title: 'Add',
+      headerBackTitle: null,
+      headerTintColor: styles.darkGreyColor
+    }
   }
-});
+})
 
-export default createAppContainer(MainNavigation);
+export default createAppContainer(MainNavigation)
