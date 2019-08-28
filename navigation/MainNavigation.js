@@ -14,7 +14,9 @@ const MainNavigation = createStackNavigator({
   MapScreen: {
     screen: MapScreen,
     navigationOptions: {
-      header: null
+      title: 'Map',
+      headerBackTitle: null,
+      headerTintColor: styles.darkGreyColor
     }
   },
   Add: {
